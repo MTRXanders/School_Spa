@@ -10,7 +10,6 @@ import AuthServices from './services/AuthServices';
 import RolesService from './services/RolesService';
 import UsersService from './services/UsersService';
 
-import './styles/login.scss';
 import './custom.css';
 import NotFoundPage from './components/NotFoundPage';
 import { UserForm } from './components/UserForm';
