@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link, Route } from 'react-router-dom';
 import { AuthButton } from './AuthButton';
-import { AuthService } from '../App';
+import { AuthService } from '../serviceManager/servicesProvider';
 
 import './NavMenu.css';
 
@@ -26,7 +26,27 @@ export class NavMenu extends Component {
     pointerHandler(e) {
     console.log(e.target)
     }
+    arrayComp() {
+        if (AuthService.isSignedIn()) {
+            const arr = [{ text: 'List', to: '/users' }, { text: 'Roles', to: '/roles' }, { text: 'Tests', to: 'tests' }]
+            for (let key in arr) {
+                return (<NavItem>
+                    <NavLink tag={Link} className="text-dark group" to={arr[key].to}>{arr[key].text}</NavLink>
+                </NavItem>
+                    )
+            }
+        }
+    }
     render() {
+        const arr = [{ text: 'List', to: '/users' }, { text: 'Roles', to: '/roles' }, { text: 'Tests', to: '/tests' }];
+        const arrayComp = arr.map((item, index) => {
+            return (
+                <NavItem key={index}>
+                    <NavLink tag={Link} className="text-dark group" to={item.to}>{item.text}</NavLink>
+                </NavItem>
+            )
+        })
+        
         return (
             <header>
                 <Navbar  className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
@@ -39,14 +59,7 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                                 </NavItem>
 
-                                {AuthService.isSignedIn() ?
-                                    (
-                                    <NavItem>
-                                            <NavLink tag={Link} className="text-dark group" to="/userlist">List</NavLink>
-                                            <NavLink tag={Link} className="text-dark group" to="/roleslist">Roles</NavLink>
-                                    </NavItem>
-                                ) : ""
-                                    }
+                                {arrayComp}
                                 <Route component={AuthButton}/>
                       
                             </ul>

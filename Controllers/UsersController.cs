@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using School_Spa.Controllers.ControllerHelpers;
 using School_Spa.Models;
 using School_Spa.ViewModels;
 using System;
@@ -10,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using School_Spa.Data;
 using System.Security.Claims;
 using System.Reflection;
+using School_Spa.Services;
+using Microsoft.Extensions.Logging;
 
 namespace School_Spa.Controllers
 {
@@ -22,20 +26,23 @@ namespace School_Spa.Controllers
         private readonly IRepositoryUsers _repo;
         private readonly AppDbContext _ctx;
         private readonly UserManager<AppIdentityUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IEmailSender _emailSender;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(AppDbContext ctx, IRepositoryUsers repo, RoleManager<ApplicationRole> roleMgr, UserManager<AppIdentityUser> userMgr)
+        public UsersController(IEmailSender emailSender, ILoggerFactory loggerFactory, AppDbContext ctx, IRepositoryUsers repo, UserManager<AppIdentityUser> userMgr)
         {
             _repo = repo;
             _ctx = ctx;
             _userManager = userMgr;
-            _roleManager = roleMgr;
+            _emailSender = emailSender;
+            _logger = loggerFactory.CreateLogger<UsersController>();
         }
 
         //GET api/users
         [HttpGet]
         public IEnumerable<ApplicationUser> Get()
         {
+            
             var res = HttpContext.User.Claims;
             var sdf = HttpContext.Request.Headers;
             var users =  _repo.GetAllProfiles();
@@ -84,11 +91,7 @@ namespace School_Spa.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ViewApplicationUser vm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
+          
             var user = new AppIdentityUser
             {
                 UserName = vm.UserName,
@@ -111,15 +114,24 @@ namespace School_Spa.Controllers
                 UniqId = vm.UniqId,
                 
             };
-       
+            //if (!user.EmailConfirmed  )
+            //{
+            //    // Send email confirmation email
+            //    var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //    var emailConfirmUrl = Url.RouteUrl("ConfirmEmail", new { uid = user.Id, token = confirmToken }, this.Request.Scheme);
+            //    await _emailSender.SendEmailAsync(user.Email, "Please confirm your account",
+            //            $"Please confirm your account by clicking this <a href=\"{emailConfirmUrl}\">link</a>."
+            //    );
+
+            //    _logger.LogInformation($"Sent email confirmation email (id: {user.Id})");
+            //}
             IdentityResult result = await _userManager.CreateAsync(user, TempPass);
             await _userManager.AddToRolesAsync(user, vm.Roles);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
-                
             }
-
+      
             var profile = await _ctx.AppUsers.AddAsync(appUser);
             await _ctx.SaveChangesAsync();
             return Ok();
@@ -130,14 +142,16 @@ namespace School_Spa.Controllers
         [HttpPut("{id}")]
         public  async Task<IActionResult> Edit(string id, [FromBody]ViewApplicationUser vm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var currentIdentity = _repo.GetIdentity(id);
 
-            var differencesIdentity = DiffUpdateProperties<AppIdentityUser>(currentIdentity, vm);
-            var differencesProfile = DiffUpdateProperties<ApplicationUser>(currentIdentity.AppUser, vm);
+            if(currentIdentity == null)
+            {
+                var error = new { StatusText = "There is no item with this id" };
+                return BadRequest(error);
+            }
+
+            var differencesIdentity = vm.DiffUpdateProperties(currentIdentity);
+            var differencesProfile = vm.CreateExampleFromDifference(currentIdentity.AppUser);
 
             IList<string> roles = await _userManager.GetRolesAsync(currentIdentity);
             List<string> arrayToAction = new List<string>();
@@ -182,58 +196,7 @@ namespace School_Spa.Controllers
         }
 
 
-        public T DiffUpdateProperties<T>(T current, object input) 
-        {
-            Type type = current.GetType();
-           
-            foreach (PropertyInfo p in type.GetProperties())
-            {
-                object currentValue = p.GetValue(current, null);
-                
-                if (input.GetType().GetProperty(p.Name) != null && !p.Name.Contains("Id"))
-                {
-                    object inputValue = input.GetType().GetProperty(p.Name).GetValue(input, null);
-
-                    if (inputValue != null && !currentValue.Equals(inputValue))
-                    {
-                        p.SetValue(current, inputValue);
-                    }
-                    else
-                    {
-                        p.SetValue(current, currentValue);
-                    }
-                }
-            }
-
-            return current;
-        }
-
-        public T DiffCreateProperties<T>(T current, object input)where T: new()
-        {
-            Type type = current.GetType();
-            var obj = new T();
-            foreach (PropertyInfo p in type.GetProperties())
-            {
-                object currentValue = p.GetValue(current, null);
-
-                if (input.GetType().GetProperty(p.Name) != null && !p.Name.Contains("Id"))
-                {
-                    object inputValue = input.GetType().GetProperty(p.Name).GetValue(input, null);
-
-                    if (!currentValue.Equals(inputValue))
-                    {
-                        p.SetValue(obj, inputValue);
-                    }
-                    else
-                    {
-                        p.SetValue(obj, currentValue);
-                    }
-                }
-            }
-
-            return current;
-        }
-
+       
     }
 
   

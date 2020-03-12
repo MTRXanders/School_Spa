@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 using School_Spa.Data;
 using School_Spa.Models;
 using School_Spa.Services;
-using System;
 
 namespace School_Spa
 {
@@ -32,6 +28,9 @@ namespace School_Spa
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration["DefaultConnection"]));
+           
+            // Configure Entity Framework Initializer for seeding
+            services.AddTransient<IDBInitializer, DBInitializer>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -49,13 +48,10 @@ namespace School_Spa
             .AddDefaultTokenProviders();
 
 
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddCookie(options=> {
-                    options.LoginPath =  new PathString("/");
-                    options.AccessDeniedPath = new PathString("/");
-                    options.ReturnUrlParameter = new PathString("/");
-                })
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -69,7 +65,16 @@ namespace School_Spa
                         ValidateIssuerSigningKey = true,
                     };
                 });
+            services.ConfigureApplicationCookie(option => 
+            { 
+                option.LoginPath = new PathString("/");
+              
+            });
+
             services.AddTransient<IRepositoryUsers, RepositoryUsers>();
+            services.AddTransient<IRepositoryTest, RepositoryTest>();
+            services.AddTransient<IRepositoryTestResult, RepositoryTestResult>();
+            services.AddTransient<IRepositoryQuestion, RepositoryQuestion>();
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<EmailSenderOptions>(Configuration.GetSection("email"));
             services.AddControllersWithViews().AddNewtonsoftJson(options =>

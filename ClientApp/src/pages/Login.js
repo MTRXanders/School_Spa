@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AuthService } from '../App';
+import { AuthService } from '../serviceManager/servicesProvider';
 import { Redirect } from 'react-router-dom';
 import '../styles/login.scss';
 const { Component } = React;
@@ -44,7 +44,7 @@ export class Login extends Component {
         AuthService.signIn(this.state.login, this.state.password)
             .then((response) => {
                 if (response.succeeded === true) {
-                    this.props.history.push("./userlist");
+                    this.props.history.push("./users");
                 } else {
                     if (response.error_description) this.setState({ error_description: response.error_description })
                 }
@@ -121,11 +121,11 @@ export class Login extends Component {
     }
     redirect() {
         console.log("login", AuthService.isSignedIn())
-        this.props.history.push("./userlist")
+        this.props.history.push("./users")
     }
     render() {
         if (this.state.isSignedIn === true) {
-           return ( <Redirect to="/userlist"/>)
+           return ( <Redirect to="/users"/>)
         } else {
             return (
                 <section id="entry-page">

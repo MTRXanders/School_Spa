@@ -2,15 +2,14 @@
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
-import { RoleService } from "../App";
-import { Layout } from "./Layout";
+import { RoleService } from "../serviceManager/servicesProvider";
+import { Layout } from "../components/Layout";
 
 
 export default class List extends React.Component{
 
     constructor(props) {
         super(props)
-      
         this.toggle = this.toggle.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);

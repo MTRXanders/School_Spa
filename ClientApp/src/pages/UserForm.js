@@ -2,10 +2,9 @@
 import React from 'react';
 import User from '../stores/models/UserModel';
 import { Link } from 'react-router-dom';
-import { UserService } from '../App';
-import { RoleService } from '../App';
+import { UserService, RoleService } from '../serviceManager/servicesProvider';
 import '../styles/UserForm.scss';
-import { Layout } from './Layout';
+import { Layout } from '../components/Layout';
 
 
 
@@ -182,7 +181,7 @@ export class UserForm extends React.Component {
                         <div className="form-control-feedback">{this.state.Errors.UniqId}</div>
                     </div>
                     <button className="btn btn-lg btn-primary btn-block" type="submit">Save</button>
-                    <Link className="btn btn-lg btn-light btn-block" to="/userlist">Cancel</Link>
+                    <Link className="btn btn-lg btn-light btn-block" to="/users">Cancel</Link>
                 </form>
             </fieldset>
             </Layout>

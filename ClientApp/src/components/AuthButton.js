@@ -1,12 +1,8 @@
 ﻿import React from 'react';
 import { NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { AuthService } from "../App";
+import { AuthService } from "../serviceManager/servicesProvider";
 const { Component } = React;
-
-
-
-
 
 export class AuthButton extends Component {
     constructor(props) {

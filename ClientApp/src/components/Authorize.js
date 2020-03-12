@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { AuthService } from "../App";
+import { AuthService } from "../serviceManager/servicesProvider";
 import { Route, Redirect } from 'react-router-dom';
 
 export const Authorize = ({children,...rest })=>{

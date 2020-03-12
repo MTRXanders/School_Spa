@@ -1,4 +1,4 @@
-﻿import { Rest } from '../App';
+﻿import { Rest } from '../serviceManager/servicesProvider';
 
 export default class RolesService {
     constructor() {

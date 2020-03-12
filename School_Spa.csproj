@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
@@ -44,7 +44,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\components\pages\" />
+    <Compile Remove="Migrations\20200302211237_Testing.cs" />
+    <Compile Remove="Migrations\20200302211237_Testing.Designer.cs" />
+    <Compile Remove="Migrations\20200302212709_Testing.cs" />
+    <Compile Remove="Migrations\20200302212709_Testing.Designer.cs" />
+    <Compile Remove="Migrations\20200302220423_Testing.cs" />
+    <Compile Remove="Migrations\20200302220423_Testing.Designer.cs" />
+    <Compile Remove="Migrations\20200302221945_Testing.cs" />
+    <Compile Remove="Migrations\20200302221945_Testing.Designer.cs" />
+    <Compile Remove="Migrations\20200302222723_Testing.cs" />
+    <Compile Remove="Migrations\20200302222723_Testing.Designer.cs" />
+    <Compile Remove="Migrations\20200304060541_TestingFix.cs" />
+    <Compile Remove="Migrations\20200304060541_TestingFix.Designer.cs" />
+    <Compile Remove="Migrations\20200304061024_TestingFix.cs" />
+    <Compile Remove="Migrations\20200304061024_TestingFix.Designer.cs" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

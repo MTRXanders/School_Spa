@@ -26,7 +26,6 @@ namespace School_Spa.ViewModels
         [Required]
         public string Gender { get; set; }
 
-        
         [StringLength(16, MinimumLength = 6)]
         public string UniqId { get; set; }
 

@@ -41,5 +41,7 @@ namespace School_Spa.Models
 
         public AppIdentityUser IdentityOfUser { get; set; }
 
+        public IEnumerable<TestsResult> TestsResults { get; set; }
+
     }
 }

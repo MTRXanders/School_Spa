@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using School_Spa.Models;
 using School_Spa.Services;
+using School_Spa.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,26 +18,22 @@ using System.Threading.Tasks;
 
 namespace School_Spa.Controllers
 {
-    
     [Authorize]
     public class AuthController : Controller
     {
         private readonly UserManager<AppIdentityUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IEmailSender _emailSender;
         private readonly SignInManager<AppIdentityUser> _signInManager;
         private readonly ILogger _logger;
 
         public AuthController(
             UserManager<AppIdentityUser> userManager,
             IOptions<IdentityOptions> identityOptions,
-            IEmailSender emailSender,
             SignInManager<AppIdentityUser> signInManager,
             ILoggerFactory loggerFactory)
         {
             _userManager = userManager;
             _identityOptions = identityOptions;
-            _emailSender = emailSender;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AuthController>();
         }
@@ -57,16 +54,7 @@ namespace School_Spa.Controllers
                 });
             }
             var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
-            // Ensure the email is confirmed.
-            //if (!await _userManager.IsEmailConfirmedAsync(user))
-            //{
-            //    return BadRequest(new
-            //    {
-            //        error = "email_not_confirmed",
-            //        error_description = "You must have a confirmed email to log in."
-            //    });
-            //}
-           
+                    
             var role = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
@@ -110,5 +98,21 @@ namespace School_Spa.Controllers
             return Ok();
         }
 
+
+        [AllowAnonymous]
+        [HttpGet("~/api/auth/confirm", Name = "ConfirmEmail")]
+        public async Task<IActionResult> Confirm(string uid, string token)
+        {
+            var user = await _userManager.FindByIdAsync(uid);
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (confirmResult.Succeeded)
+            {
+                return Redirect("/?confirmed=1");
+            }
+            else
+            {
+                return Redirect("/error/email-confirm");
+            }
+        }
     }
    }

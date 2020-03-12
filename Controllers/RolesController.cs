@@ -26,7 +26,7 @@ namespace School_Spa.Controllers
         public IQueryable<dynamic> GetRoles()
         {
            var res = _roleManager.Roles.Select(r=> new { r.Name , r.Id });
-            return res;
+           return res;
         }
         [HttpGet("id")]
         public  async Task<ApplicationRole> GetRole(string name)
@@ -36,10 +36,7 @@ namespace School_Spa.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ViewApplicationRoles vm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+           
             var role = new ApplicationRole
             {
               Name = vm.Name
@@ -54,10 +51,7 @@ namespace School_Spa.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(string name, ApplicationRole model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+           
             var currentState = await _roleManager.FindByNameAsync(name);
             var role = new ApplicationRole
             {

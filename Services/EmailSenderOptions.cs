@@ -20,7 +20,7 @@ namespace School_Spa.Services
                 this.username = smtpConfigPartsMatch.Groups[1].Value;
                 this.password = smtpConfigPartsMatch.Groups[2].Value;
                 this.host = smtpConfigPartsMatch.Groups[3].Value;
-                this.port = Convert.ToInt32(smtpConfigPartsMatch.Groups[4].Value);
+              //  this.port = Convert.ToInt32(smtpConfigPartsMatch.Groups[4].Value);
             }
         }
 
