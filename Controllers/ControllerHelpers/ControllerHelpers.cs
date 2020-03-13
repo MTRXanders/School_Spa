@@ -58,7 +58,7 @@ namespace School_Spa.Controllers.ControllerHelpers
                 }
             }
 
-            return current;
+            return obj;
         }
 
         public static T CreateExampleFromProp<T>(this object input) where T: new()
